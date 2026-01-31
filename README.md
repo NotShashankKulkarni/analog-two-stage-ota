@@ -43,19 +43,20 @@ gate voltage was swept to extract DC current and small-signal
 parameters. Separate testbenches were used for NFET and PFET devices
 to correctly account for polarity and biasing.
 
-Device characterization was performed across multiple channel
-lengths. The resulting curves were consolidated into combined plots
-to enable direct comparison during sizing and trade-off analysis.
+For each simulation run, a CSV lookup table was generated containing:
+- Gate voltage (Vgs)
+- Drain current (Id)
+- Transconductance (gm)
+- gm/Id ratio
+- Drain current per unit width (Id/µm)
 
-Generated LUTs include:
-- gm/Id vs drain current
-- gm vs drain current
-- Vgs vs gm/Id
+The LUTs were used for sizing and trade-off analysis, while plots of
+Id vs Vgs, gm vs Vgs, and gm/Id vs Vgs were generated for verification
+and visualization.
 
 Corresponding schematics are provided in `schematics/`, and the
 Python script used for LUT generation is available in
 `lut_generation/`.
-
 
 ---
 
