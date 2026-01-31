@@ -4,32 +4,30 @@ This repository documents the complete design, sizing, and simulation
 of a two-stage CMOS operational transconductance amplifier (OTA)
 implemented using the SKY130 PDK.
 
-The work focuses on methodical analog design using LUT-based sizing,
-stability analysis, and simulation-driven validation.
+The work follows a structured gm/Id and LUT-based analog design
+methodology, with device-level characterization, transistor sizing,
+and simulation-driven validation.
+
+---
+
+## Design Specifications
+
+| Parameter        | Value                                  |
+|------------------|----------------------------------------|
+| Supply Voltage   | ±1.8 V                                 |
+| Topology         | Two-stage OTA with Miller compensation |
+| Target DC Gain   | ≥ 60 dB                                |
+| Target UGB       | ≈ 340 MHz                              |
+| Miller Capacitor | 0.1 pF                                 |
 
 ---
 
 ## Design Objectives
 
-- Achieve high DC gain with stable closed-loop operation
-- Ensure adequate phase margin under nominal load conditions
-- Use gm/Id-based sizing for predictable performance
-- Validate design decisions through simulation
-
----
-
-## Design Methodology
-
-The OTA was designed using a structured workflow:
-
-1. Device-level characterization using ngspice
-2. LUT generation for gm/Id, output resistance, and ft
-3. Transistor sizing based on target gain and stability
-4. Frequency compensation for robust phase margin
-5. Iterative AC and transient simulations for verification
-
-Python scripts were used to automate LUT generation and visualize
-design trade-offs.
+- Achieve high DC gain with stable closed-loop operation  
+- Ensure adequate phase margin under nominal conditions  
+- Use gm/Id-based sizing for predictable biasing  
+- Validate design decisions through simulation  
 
 ---
 
@@ -43,6 +41,11 @@ gate voltage was swept to extract DC current and small-signal
 parameters. Separate testbenches were used for NFET and PFET devices
 to correctly account for polarity and biasing.
 
+The LUT generation was performed across **multiple channel lengths**.
+The resulting data was post-processed and combined to enable
+length-dependent design trade-off analysis. The post-processing script
+used to merge and visualize multi-L data is intentionally not included.
+
 For each simulation run, a CSV lookup table was generated containing:
 - Gate voltage (Vgs)
 - Drain current (Id)
@@ -50,34 +53,59 @@ For each simulation run, a CSV lookup table was generated containing:
 - gm/Id ratio
 - Drain current per unit width (Id/µm)
 
-The LUTs were used for sizing and trade-off analysis, while plots of
-Id vs Vgs, gm vs Vgs, and gm/Id vs Vgs were generated for verification
-and visualization.
+Plots generated from the LUTs include:
+- gm/Id vs Id/µm (NMOS and PMOS, multiple L)
+- gm vs Id/µm
+- Vgs vs gm/Id
 
-Corresponding schematics are provided in `schematics/`, and the
-Python script used for LUT generation is available in
-`lut_generation/`.
+Corresponding device characterization schematics are provided in
+`schematics/`, and the Python script used for LUT extraction is
+available in `lut_generation/`.
 
 ---
 
-## Key Results
+## OTA Design and Sizing
 
-- DC gain: ~60 dB
-- Phase margin: ~64°
-- Topology: two-stage OTA with frequency compensation
+The OTA was designed using the gm/Id methodology, starting from the
+unity-gain bandwidth requirement and Miller compensation constraint.
+
+Initial transistor dimensions were obtained from LUT-based sizing.
+Final device widths and channel lengths were adjusted during
+simulation to account for parasitic capacitances, headroom constraints,
+and stability requirements.
+
+The final OTA schematic is provided in `schematics/`.
+
+---
+
+## Simulation Results
+
+AC simulations were performed using ngspice to validate gain, bandwidth,
+and stability of the OTA under nominal conditions.
+
+Measured performance:
+- DC gain: ≈ 60 dB (simulated: 59.98 dB)
+- Unity-gain bandwidth (UGB): ≈ 320 MHz
+- Phase margin: 64° (stable operation)
+- Power consumption: 216 µW
+
+Representative magnitude and phase plots are provided in
+`simulations/`.
 
 ---
 
 ## Tools Used
 
-- Xschem
-- ngspice
-- Python
-- SKY130 PDK
+- Xschem  
+- ngspice  
+- Python  
+- SKY130 PDK  
 
 ---
 
 ## Status and Future Work
 
-- OTA design and simulations completed
-- LDO and high-pass filter designs planned as future work
+- OTA design, sizing, and AC verification completed  
+- LDO and high-pass filter designs planned as future work  
+
+
